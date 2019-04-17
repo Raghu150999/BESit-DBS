@@ -11,7 +11,7 @@
     "react-responsive-modal": "^3.6.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.5",
+    "react-scripts": "^2.1.8",
     "redux": "^3.7.2",
     "redux-form": "^7.2.3",
     "redux-thunk": "^2.1.0"
