@@ -7,21 +7,25 @@ const mysql = require('mysql');
 
 const app = express();
 
-// environment variables for jwt token
-require('dotenv').config();
-
-// MySQL connection
-let con = mysql.createConnection({
+const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'root',
-  database: 'besit'
+  database: 'besit',
+  insecureAuth: true
 });
 
-con.connect((err) => {
-  if(err) throw err;
-  console.log('Connected to MySQL DB');
+connection.connect((err) => {
+  if (err) {
+    throw err;
+  }
+  else {
+    console.log('Connected to DB');
+  }
 });
+
+// environment variables for jwt token
+require('dotenv').config();
 
 
 // Middleware Setup
@@ -77,4 +81,4 @@ app.post('/removeitem', (req, res) => {
 app.listen(process.env.PORT || 8000);
 console.log(`Listening to port ${port}`);
 
-module.exports.connection = con;
+module.exports.connection = connection;

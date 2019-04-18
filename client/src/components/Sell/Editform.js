@@ -10,29 +10,29 @@ class Form extends Component {
     err: false
   }
 
-  prevdata=this.props.formdata;
+  prevdata = this.props.formdata;
 
   submitForm = (e) => {
-        e.preventDefault();
-        if (this.state.err) {
-            return;
-        }
-        const formData = {
-        category: e.target[0].value,
-        name: e.target[1].value,
-        price: e.target[2].value,
-        desc: e.target[3].value,
-        rating: e.target[4].value,
-        timestamp: Date(),
-        owner: this.props.user.username,
-        status: 'Available'
-        };
+    e.preventDefault();
+    if (this.state.err) {
+      return;
+    }
+    const formData = {
+      _id: prevdata._id,
+      name: e.target[1].value,
+      price: e.target[2].value,
+      status: 'Available',
+      description: e.target[3].value,
+      timestamp: Date(),
+      owner: this.props.user.username,
+      category: e.target[0].value,
+    };
 
-        axios.post('/api/updateitem', {form:formData,id:this.prevdata._id})
-        .then(res => {
-            //reload the page after uploading image successfully
-           window.location = '/sell';
-        });
+    axios.post('/api/updateitem', { form: formData, id: this.prevdata._id })
+      .then(res => {
+        //reload the page after uploading image successfully
+        window.location = '/sell';
+      });
   }
 
   render() {
@@ -41,7 +41,7 @@ class Form extends Component {
         <strong>Error: </strong> Images Only!
       </div>
     ) : ('');
-    let categories = this.props.categories.map((category,index) => {
+    let categories = this.props.categories.map((category, index) => {
       return (
         <option key={category._id}>{category.name}</option>
       )
@@ -52,11 +52,11 @@ class Form extends Component {
         <form onSubmit={this.submitForm}>
           <div className="form-group">
             <label htmlFor="exampleFormControlSelect1">Category</label>
-            <select className="form-control" id="exampleFormControlSelect1 " defaultValue={this.prevdata.category} > 
+            <select className="form-control" id="exampleFormControlSelect1 " defaultValue={this.prevdata.category} >
               {categories}
             </select>
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="exampleFormControlInput1">Name Of Item</label>
             <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="eg:Harry Potter Books" defaultValue={this.prevdata.name} ></input>

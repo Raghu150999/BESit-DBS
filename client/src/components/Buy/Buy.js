@@ -47,7 +47,7 @@ class Buy extends Component {
   render() {
     let categories = this.state.categories.map(category => {
       return (
-        <option key={category._id}>{category.name}</option>
+        <option key={category.name}>{category.name}</option>
       )
     });
     categories.unshift((
