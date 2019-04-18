@@ -1,37 +1,56 @@
-const router = require('express').Router();
+const router = require('express').Router(); //or can we import express only and use it for routes
 const User = require('../models/userSchema');
 const Requirement = require('../models/reqSchema');
 const jwtHandler = require('./../auth/token');
 const utils = require('./../utils/utils');
 const jwt = require('jsonwebtoken');
+const app=require('./../../app');
+var connection; //taking whole exports object as app and then using app.connection but why not working ????
 
 
 router.post('/verifyuser', (req, res) => {
-    console.log(req.body);
-    User.findOne({ username: req.body.username }).then(function (result) {
-        if (result)
-            req.check('username', 'User already exists').not().equals(result.username);
-        req.check('fname', 'First Name missing').notEmpty();
-        req.check('password', 'Password cannot be empty').notEmpty();
-        req.check('password', 'Passwords don\'t match').equals(req.body.rpassword);
-        req.check('phoneno', 'Phoneno is invalid').isMobilePhone(["en-IN"]);
-        const errors = req.validationErrors();
-        let response;
-        if (errors) {
-            response = {
-                success: false,
-                errors,
-            }
-            res.send(response);
+    connection= app.connection;
+    let sql="select * from user where username = ?";
+    connection.query(sql,req.body.username,function (err,result) {
+        if(err){
+            console.log('error in 1st sql query',err);
+            res.send('err during checking req.body existence');
         }
-        else {
-            response = {
-                success: true,
-                errors: null
-            }
-            User.saveUser(req.body, function (result) {
+        else{
+            console.log(result);
+            if (result)
+                req.check('username', 'User already exists').not().equals(result.username);
+            req.check('fname', 'First Name missing').notEmpty();
+            req.check('password', 'Password cannot be empty').notEmpty();
+            //req.check('password', 'Passwords don\'t match').equals(req.body.rpassword);
+            req.check('phoneno', 'Phoneno is invalid').isMobilePhone(["en-IN"]);
+            const errors = req.validationErrors();
+            let response;
+            if (errors) {
+                response = {
+                    success: false,
+                    errors,
+                }
+                console.log(errors);
                 res.send(response);
-            });
+            }
+            else {
+                response = {
+                    success: true,
+                    errors: null
+                }
+                sql='insert into user set ?';   //validation phoneno 10 numbers expected so use bigint(20) in database
+                connection.query(sql,req.body, function(err,result){
+                    if(err){
+                        console.log(err,'database accessing error');
+                        res.send(err);
+                    }
+                    else{
+                        console.log(result);
+                        res.send(response);
+                    }
+                });
+            }
         }
     });
 });
@@ -195,40 +214,81 @@ router.post('/removereq', (req, res) => {
 });
 
 router.post('/newreq', (req,res) => 
-{
-    const requirement = new Requirement(
-        {
-            title: req.body.title,
-            desc: req.body.desc,
-            timestamp: req.body.timestamp,
-            username: req.body.username
-        });
-    requirement.save().then(() => {
-        res.send(requirement);
+{   connection=app.connection;
+    // const requirement = new Requirement(
+    //     {
+    //         title: req.body.title,
+    //         desc: req.body.desc,
+    //         timestamp: req.body.timestamp,
+    //         username: req.body.username
+    //     });
+    // requirement.save().then(() => {
+    //     res.send(requirement);
+    // });
+    let sql="insert into requirement set ?";
+    console.log(req.body);
+    connection.query(sql,req.body,(err,result)=>{
+        if(err){
+            console.log(err);
+            res.send(err);
+        }
+        else{
+            console.log('inserted into database',result);
+            res.send(result);
+        }
     });
+    //res.send({req:req.body});
 });
 
 router.get('/getreq',(req,res) =>
 {
-    Requirement.find().then(result =>
-    {
-        res.send(result.reverse());
+    // Requirement.find().then(result =>
+    // {
+    //     res.send(result.reverse());
+    // });
+    connection=app.connection;
+    let sql="select * from requirement order by timestamp desc";
+    connection.query(sql,(err,result)=>{
+        if(err){
+            console.log(err);
+            res.send(err);
+        }
+        else{
+            console.log(result);
+            res.send(result);
+        }
     });
 });
 
 router.get('/getownreq',(req,res) =>
 {
-    Requirement.find({username: req.query.username}).then(result =>
-    {
-        res.send(result);
+    // Requirement.find({username: req.query.username}).then(result =>
+    // {
+    //     res.send(result);
+    // });
+    connection=app.connection;
+    let sql="select * from requirement where username= ?";
+    console.log(req.query);
+    console.log(req.body);
+    connection.query(sql,req.query.username,(err,result)=>{
+        if(err){
+            console.log(err);
+            res.send(err);
+        }
+        else {
+            //console.log(result);
+            res.send(result);
+        }
     });
 });
 
 router.post('/updateinteresteduser', (req, res) => {
-    Product.findOneAndUpdate({ _id: req.body.item._id }, { interestedUsers: req.body.interestedUsers })
-        .then(result => {
-            res.send('ok');
-        });
+    connection=app.connection;
+    let sql="insert into interest set ?";
+    // Product.findOneAndUpdate({ _id: req.body.item._id }, { interestedUsers: req.body.interestedUsers })
+    //     .then(result => {
+    //         res.send('ok');
+    //     });
 });
 
 router.post('/updateitem', (req, res) => {
