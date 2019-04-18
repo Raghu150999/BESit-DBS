@@ -1,6 +1,6 @@
 const api = require('./api');
 const expressValidator = require('express-validator');
-const router = require('express').Router()
+const router = require('express').Router();
 const admin = require('./admin');
 const search = require('./search');
 const notify = require('./notify');

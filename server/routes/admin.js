@@ -1,19 +1,19 @@
 const router = require('express').Router();
 const Category = require('./../models/categoySchema');
+const app = require('./../../app');
 
 router.post('/addcategory', (req, res) => {
-	let category = new Category({
-		name: req.body.name
-	});
-	console.log(req.body.name);
-	category.save({name: req.body.name})
-		.then(() => {
-			res.send('ok, added');
-		});
+	let query = "insert into category values ('" + req.body.name + "');";
+	app.connection.query(query, (err, result) => {
+		if (err) throw err;
+		res.send('added category');
+	})
 });
 
 router.get('/getcategories', (req, res) => {
-	Category.find().then(result => {
+	let query = "select * from category";
+	app.connection.query(query, (err, result) => {
+		if (err) throw err;
 		res.send(result);
 	})
 });
