@@ -25,6 +25,9 @@ class Products extends Component {
           });
         });
     }
+    else{
+      console.log('no user');
+    }
   }
 
   componentDidUpdate() {

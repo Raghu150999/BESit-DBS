@@ -4,7 +4,16 @@ const Requirement = require('../models/reqSchema');
 const jwtHandler = require('./../auth/token');
 const utils = require('./../utils/utils');
 const jwt = require('jsonwebtoken');
+const mysql=require('mysql');
 
+var connection=mysql.createConnection({
+    host:'localhost',
+    user:'root',
+    password:'root',
+    database:'besit',
+    insecureAuth:true
+  });
+  
 
 router.post('/verifyuser', (req, res) => {
     console.log(req.body);
@@ -42,6 +51,7 @@ router.post('/updateuser', (req, res) => {
     req.check('fname', 'First Name missing').notEmpty();
     req.check('password', 'Password cannot be empty').notEmpty();
     req.check('phoneno', 'Phone number is invalid').isMobilePhone(["en-IN"]);
+    let sql="update user set fname="+req.body.fname+"password="+req.body.password+"phoneno="+req.body.phoneno+"where username="+req.body.username;
     const errors = req.validationErrors();
     let response;
     if (errors) {
@@ -56,142 +66,220 @@ router.post('/updateuser', (req, res) => {
             success: true,
             errors: null
         }
-        User.findOneAndUpdate({ username: req.body.username }, { fname: req.body.fname, password: req.body.password, phoneno: req.body.phoneno }).then(function (result) {
-            res.send(response);
-        });
+        connection.querry(sql,(err,result)=>{
+            if(err)
+            {
+                console.log('error');
+            }
+            else
+            {
+              res.send(response);
+            }
+          });
     }
 });
 
 router.post('/login', (req, res) => {
-    User.findOne({ username: req.body.username }).then(result => {
-        let err = false;
-        let success = true;
-        let cleanUser;
-        if (result) {
-            if (result.password !== req.body.password) {
+    let sql="select * from user where username='"+req.body.username+"'";
+    connection.query(sql, (err,result)=>{
+        if(err)
+        {
+            console.log('error');
+        }
+        else
+        {
+            let err = false;
+            let success = true;
+            let cleanUser;
+            if (result) {
+                if (result[0].password !== req.body.password) {
+                    err = true;
+                    success = false;
+                }
+                cleanUser = utils.getCleanUser(result[0]);
+            }
+            else {
                 err = true;
                 success = false;
             }
-            cleanUser = utils.getCleanUser(result);
+    
+            const response = {
+                success: success,
+                error: err,
+                msg: 'Invalid username or password',
+                user: cleanUser,
+                token: null
+            };
+    
+            if (err === false) {
+                let token = jwtHandler.generateToken(result[0]);
+                response.token = token;
+            }
+            res.send(response);
         }
-        else {
-            err = true;
-            success = false;
-        }
-
-        const response = {
-            success: success,
-            error: err,
-            msg: 'Invalid username or password',
-            user: cleanUser,
-            token: null
-        };
-
-        if (err === false) {
-            let token = jwtHandler.generateToken(result);
-            response.token = token;
-        }
-        res.send(response);
-    });
+      });
 });
 
 router.get('/authorize', (req, res) => {
     let token = req.query.token;
     jwt.verify(token, process.env.JWT_SECRET, function (err, user) {
         if (err) throw err;
-        User.findOne({ username: user.username }).then(result => {
-            let response;
-            if (result) {
-                user = utils.getCleanUser(user);
-                response = {
-                    user,
-                    success: true
-                }
+        let sql="select * from user where username='"+user.username+"'";
+        connection.query(sql,(error,result)=>{
+            if(error)
+            {
+                console.log('error');
             }
-            else {
-                response = {
-                    user: null,
-                    success: false
+            else
+            {
+                let response;
+                if (result) {
+                    user = utils.getCleanUser(user);
+                    response = {
+                        user,
+                        success: true
+                    }
                 }
+                else {
+                    response = {
+                        user: null,
+                        success: false
+                    }
+                }
+                res.send(response);
             }
-            res.json(response);
-        });
+          });
     });
 });
 
 const Product = require('./../models/productSchema');
 
 router.get('/getInterestedUsers', (req, res) => {
-    Product.findOne({ _id: req.query.id }).then(result => {
-        let response = [];
-        if (result) {
-            response = result.interestedUsers
+    let sql="select username,status from interest where pid="+req.query.pid;
+    connection.query(sql,(err,result)=>{
+        if(err)
+        {
+          console.log('error');
         }
-        else {
-            reponse = null;
+        else
+        {
+            let response = [];
+            if (result) {
+                response = result
+            }
+            else {
+                reponse = null;
+            }
+            res.send(response);
         }
-        console.log(response);
-        res.send(response);
-        
-    });
+      });
 });
 
 router.get('/getContact', (req, res) => {
-    User.findOne({ username: req.query.username }).then(result => {
-        let response;
-        if (result) {
-            response = {
-                name: result.fname,
-                phoneno: result.phoneno
-            }
+    let sql="select fname,phoneno from user where username='"+req.query.username+"'";
+    connection.query(sql,(err,result)=>{
+        if(err)
+        {
+          console.log('error');
         }
-        else {
-            // @ankit pls check this block of code
-            response = {
-                name: 'good',
-                phoneno: 9080683671
+        else
+        {
+            let response;
+            if (result) {
+                response = {
+                    name: result[0].fname,
+                    phoneno: result[0].phoneno
+                }
             }
+            else {
+                // @ankit pls check this block of code
+                response = {
+                    name: 'good',
+                    phoneno: 9080683671
+                }
+            }
+            res.send(response);
         }
-        res.send(response);
-    });
+      });
 });
 
 router.get('/getitems', (req, res) => {
     // req.query contains the parameter passed from axios request  // see in console your username
-    Product.find({ owner: req.query.username }).then(result => {
-        res.send(result);
-    });
+    console.log(req.query);
+    let sql="select * from product where owner='"+req.query.username+"'";
+    console.log(req.query.username);
+    connection.query(sql,(err,result)=>{
+        if(err)
+        {
+          console.log('error');
+        }
+        else
+        {
+            let response=result;
+            res.send(response);
+        }
+      });
 });
 
 router.get('/getprods', (req,res) => 
 {
-    Product.find({status: 'Available'}).then(result =>
-    {
-        result.reverse();
-        res.send(result);
-    })
+    let sql="select * from product where status='Available'";
+    connection.query(sql,(err,result)=>{
+        if(err)
+        {
+          console.log('error');
+        }
+        else
+        {
+            result.reverse();
+            res.send(result);
+        }
+      });
 });
 
 router.get('/getInterestedItems', (req, res) => {
     // req.query contains the parameter passed from axios request  // see in console your username
     const username=req.query.username;
     console.log(username);
-    Product.find({'interestedUsers.username':username}).then(result => {
-        res.send(result);
-    });
+    let sql="select * from interest,product where username='"+username+"' and product.pid=interest.pid";
+    connection.query(sql,(err,result)=>{
+        if(err)
+        {
+          console.log('error');
+        }
+        else
+        {
+            res.send(result);
+        }
+      });
 });
 
 router.post('/updateitemstatus', (req, res) => {
-    Product.findOneAndUpdate({ _id: req.body.id }, { status: req.body.status }).then(result => {
-        res.send('ok');
-    });
+    let sql="update product set status='"+req.body.status+"'where pid="+req.body.id;
+    connection.query(sql,(err,result)=>{
+        if(err)
+        {
+          console.log('error');
+        }
+        else
+        {
+            res.send('ok'); 
+        }
+      });
 });
 
 router.post('/removereq', (req, res) => {
-    console.log(req.body._id);
-    Requirement.deleteOne({ _id: req.body._id}).then(result => {
-        res.send('ok');
-    });
+    let sql="delete from requirement where username='"+req.body.username+"' and title='"+req.body.title+"' and desc='"+req.body.desc+"'";
+    connection.query(sql,(err,result)=>{
+        if(err)
+        {
+          console.log('error');
+        }
+        else
+        {
+          res.send('ok');
+        }
+      });
 });
 
 router.post('/newreq', (req,res) => 

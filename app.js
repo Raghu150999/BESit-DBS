@@ -10,6 +10,7 @@ const path = require('path');
 const GridFsStorage = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
 const Product = require('./server/models/productSchema');
+const mysql=require('mysql');
 
 const app = express();
 
@@ -25,6 +26,14 @@ mongoose.connect(mongodb_uri, { useNewUrlParser: true })
 
 // Setup mongodb connection for image storage
 const conn = mongoose.connection;
+
+var connection=mysql.createConnection({
+  host:'localhost',
+  user:'root',
+  password:'root',
+  database:'besit',
+  insecureAuth:true
+});
 
 let gfs;
 
@@ -133,3 +142,4 @@ app.post('/removeitem', (req, res) => {
 
 app.listen(process.env.PORT || 8000);
 console.log(`Listening to port ${port}`);
+module.exports= connection;
