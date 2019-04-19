@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './Product.css';
 import Dropdown from '../Dropdown.js'
-import Modal from 'react-responsive-modal';
 import axios from 'axios';
 import Dispuser from './Dispuser.js';
 import { connect } from 'react-redux';
@@ -52,8 +51,8 @@ class Product extends Component {
 
     let item = this.props.item;
     const api_uri = process.env.REACT_APP_API_URI_LOCAL;
-    if (!item.desc) {
-      item.desc = 'No description provided';
+    if (!item.description) {
+      item.description = 'No description provided';
     }
     // generating elements for ol
 
@@ -64,36 +63,14 @@ class Product extends Component {
       <li data-target={"#images" + item._id} data-slide-to="0" className="active" key="0"></li>
     ));
 
-    for (let i = 1; i < item.fileNames.length; i++) {
-      varOl.push((
-        <li data-target={"#images" + item._id} data-slide-to={i + ""} key={i + ""}></li>
-      ));
-    }
-
     // generating carousel elements
     let carouselElements = [];
-    if (item.fileNames.length > 0) {
-      carouselElements.push((
-        <div className="carousel-item active" key="0">
-          <img src={api_uri + "/image/" + item.fileNames[0]} className="card-img-top" alt="Responsive" />
-        </div>
-      ));
-    } else {
-      // Default image if no image is available.
-      carouselElements.push((
-        <div className="carousel-item active" key="0">
-          <img src="https://imagesvc.timeincapp.com/v3/mm/image?url=https%3A%2F%2Ftimedotcom.files.wordpress.com%2F2015%2F06%2F521811839-copy.jpg&w=800&c=sc&poi=face&q=85" className="card-img-top" alt="Responsive" />
-        </div>
-      ));
-    }
-
-    for (let i = 1; i < item.fileNames.length; i++) {
-      carouselElements.push((
-        <div className="carousel-item" key={i + ""}>
-          <img src={api_uri + "/image/" + item.fileNames[i]} className="card-img-top" alt="Responsive" />
-        </div>
-      ));
-    }
+    // Default image if no image is available.
+    carouselElements.push((
+      <div className="carousel-item active" key="0">
+        <img src="https://imagesvc.timeincapp.com/v3/mm/image?url=https%3A%2F%2Ftimedotcom.files.wordpress.com%2F2015%2F06%2F521811839-copy.jpg&w=800&c=sc&poi=face&q=85" className="card-img-top" alt="Responsive" />
+      </div>
+    ));
 
     const handleDelete = (e) => {
       let confirmation = window.confirm('This action will permanently delete this item. Do you want to continue?');
@@ -101,7 +78,6 @@ class Product extends Component {
         return;
       axios.post('/removeitem', this.props.item)
         .then(res => {
-          console.log(res.data);
           window.location = '/sell';
         })
     }
@@ -138,10 +114,6 @@ class Product extends Component {
           <div className="card box-shadow--8dp">
 
             <div id={"images" + item._id} className="carousel slide" data-ride="carousel">
-              {/* <ol className="carousel-indicators">
-                {varOl}
-              </ol> */}
-
               <div className="carousel-inner">
                 {carouselElements}
               </div>
@@ -164,7 +136,7 @@ class Product extends Component {
                   <dt className="col-sm-4">Price:</dt>
                   <dd className="col-sm-8">{String.fromCharCode(8377) + " " + item.price}</dd>
                   <dt className="col-sm-4">Desc:</dt>
-                  <dd className="col-sm-8">{item.desc}</dd>
+                  <dd className="col-sm-8">{item.description}</dd>
                 </dl>
 
                 {<Dropdown update={this.props.update} id={this.props.id} current={this.props.item.status} />}

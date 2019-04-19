@@ -9,7 +9,6 @@ class InterestedHistory extends Component{
         itemsAvailable: false
     }
     getItems=()=> {
-      console.log(this.props.user);
         if (this.props.user) {
           axios.get('/api/getInterestedItems', {
             params: {

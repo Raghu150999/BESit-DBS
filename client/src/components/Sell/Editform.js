@@ -10,15 +10,13 @@ class Form extends Component {
     err: false
   }
 
-  prevdata = this.props.formdata;
-
   submitForm = (e) => {
     e.preventDefault();
     if (this.state.err) {
       return;
     }
     const formData = {
-      _id: prevdata._id,
+      _id: this.props.formdata._id,
       name: e.target[1].value,
       price: e.target[2].value,
       status: 'Available',
@@ -28,7 +26,7 @@ class Form extends Component {
       category: e.target[0].value,
     };
 
-    axios.post('/api/updateitem', { form: formData, id: this.prevdata._id })
+    axios.post('/api/updateitem', { form: formData, id: this.props.formdata._id })
       .then(res => {
         //reload the page after uploading image successfully
         window.location = '/sell';
@@ -36,6 +34,7 @@ class Form extends Component {
   }
 
   render() {
+    
     let errmsg = this.state.err ? (
       <div className="alert alert-danger">
         <strong>Error: </strong> Images Only!
@@ -52,26 +51,26 @@ class Form extends Component {
         <form onSubmit={this.submitForm}>
           <div className="form-group">
             <label htmlFor="exampleFormControlSelect1">Category</label>
-            <select className="form-control" id="exampleFormControlSelect1 " defaultValue={this.prevdata.category} >
+            <select className="form-control" id="exampleFormControlSelect1 " defaultValue={this.props.formdata.category} >
               {categories}
             </select>
           </div>
 
           <div className="form-group">
             <label htmlFor="exampleFormControlInput1">Name Of Item</label>
-            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="eg:Harry Potter Books" defaultValue={this.prevdata.name} ></input>
+            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="eg:Harry Potter Books" defaultValue={this.props.formdata.name} ></input>
           </div>
           <div className="form-group">
             <label htmlFor="exampleFormControlInput1">Expected Price(Approx)</label>
-            <input type="text" className="form-control" id="exampleFormControlInput1" defaultValue={this.prevdata.price} ></input>
+            <input type="text" className="form-control" id="exampleFormControlInput1" defaultValue={this.props.formdata.price} ></input>
           </div>
           <div className="form-group">
             <label htmlFor="exampleFormControlTextarea1">Short Description</label>
-            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3" defaultValue={this.prevdata.desc} ></textarea>
+            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3" defaultValue={this.props.formdata.description} ></textarea>
           </div>
           <div className="form-group">
             <label htmlFor="exampleFormControlSelect1">Condition</label>
-            <select className="form-control" id="exampleFormControlSelect1" defaultValue={this.prevdata.rating}>
+            <select className="form-control" id="exampleFormControlSelect1" defaultValue={this.props.formdata.rating}>
               <option >1 star</option>
               <option >2 stars</option>
               <option >3 stars</option>

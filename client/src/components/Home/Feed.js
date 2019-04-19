@@ -91,7 +91,6 @@ class Feed extends Component {
         return y1 - x1;
       });
 
-      //console.log(w);
 
       var ret = w.length > 0 ?
         (w.map((feedItem, index) => {
@@ -107,7 +106,7 @@ class Feed extends Component {
                     <div className="card-text feed-card-text time feed-time"><small className="text-muted">{this.calcTime(feedItem.timestamp)}</small></div><br />
                     <div className="desc-req-container">
                       <div className="card-text home-req-desc-card-text">
-                        {feedItem.desc}
+                        {feedItem.description}
                       </div>
                     </div>
                   </div>
@@ -130,7 +129,7 @@ class Feed extends Component {
                         {String.fromCharCode(8377) + ' ' + feedItem.price}</strong>
                       </p>
                       <p className="card-text home-prod-desc-card-text">
-                        {feedItem.desc}
+                        {feedItem.description}
                       </p>
                     </div>
                   </div>

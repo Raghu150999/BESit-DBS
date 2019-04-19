@@ -49,9 +49,10 @@ class Requireitem extends Component {
     }
 
     let displayItems = this.state.requirements.length > 0 ? (
-      this.state.requirements.map((requirement) => {
+      this.state.requirements.map((requirement, index) => {
         return (
-            <Reqitem key={requirement._id} requirement={requirement} user={this.props.user} delete={this.handleDelete}/>
+          
+            <Reqitem key={index} requirement={requirement} user={this.props.user} delete={this.handleDelete}/>
         )
       })
     ) : (

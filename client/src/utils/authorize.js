@@ -13,7 +13,6 @@ export const authorize = async function (token) {
         }
     });
     return new Promise((resolve, reject) => {
-        console.log(res.data);
         if (res.data.success) {
             resolve({ success: true, user: res.data.user });
         }

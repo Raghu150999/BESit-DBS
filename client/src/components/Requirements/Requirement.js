@@ -36,7 +36,6 @@ class Requirement extends Component {
 
   componentDidMount() {
     axios.get('/api/getreq').then(res => {
-      //console.log(res.data[0]);
       this.setState(
         {
           requirements: res.data
@@ -47,7 +46,6 @@ class Requirement extends Component {
 
   render() {
     var x = this.state.requirements;
-    //x.reverse();
     var y = []
     for (var i = 0; i < x.length / 2; i++)
       y.push(i);
@@ -62,9 +60,8 @@ class Requirement extends Component {
                     <div key={index}>
                       <div className="card-title req-card-title"><strong>{x[index * 2].title}</strong></div>
                       <div className="card-text req-card-text username">{x[index * 2].username}</div>
-                      <div className="card-text req-card-text desc">{x[index * 2].desc}</div>
+                      <div className="card-text req-card-text desc">{x[index * 2].description}</div>
                       <div className="card-text req-card-text time"><small className="text-muted">{this.calcTime(x[index * 2].timestamp)}</small></div>
-
                     </div>
                   </div>
                 </div>
@@ -76,7 +73,7 @@ class Requirement extends Component {
                       <div key={index}>
                         <div className="card-title req-card-title"><strong>{x[index * 2 + 1].title}</strong></div>
                         <div className="card-text req-card-text username">{x[index * 2 + 1].username}</div>
-                        <div className="card-text req-card-text desc">{x[index * 2 + 1].desc}</div>
+                        <div className="card-text req-card-text desc">{x[index * 2 + 1].description}</div>
                         <div className="card-text req-card-text time"><small className="text-muted">{this.calcTime(x[index * 2 + 1].timestamp)}</small></div>
                       </div>
                     </div>

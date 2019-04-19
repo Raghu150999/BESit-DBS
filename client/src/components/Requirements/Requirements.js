@@ -32,7 +32,7 @@ class Requirements extends Component {
     {
       title: e.target[0].value,
       desc: e.target[1].value,
-      timestamp: Date(),
+      timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
       username: this.props.user.username
     };
 
@@ -43,7 +43,6 @@ class Requirements extends Component {
   }
 
   openModal = () => {
-    //console.log('Modal opened');
     this.setState({ open: true });
   };
 

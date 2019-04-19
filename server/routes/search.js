@@ -12,14 +12,62 @@ router.post('/', (req, res) => {
 			query = "select * from product where owner != '" + owneruser + "' and status = 'Available'";
 			con.query(query, (err, result) => {
 				if (err) throw err;
-				res.send(result.reverse());
+				let items = [];
+				let flag = false;
+				for (let i = 0; i < result.length; i++) {
+					flag = true;
+					query = "select * from interest where _id = " + result[i]._id + ";";
+					let item = result[i];
+					item.category = item.category_name;
+					let interestedUsers = [];
+					app.connection.query(query, (err, result2) => {
+						if (err) throw err;
+						for (let j = 0; j < result2.length; j++) {
+							interestedUsers.push({
+								username: result2[j].username,
+								status: result2[j].contactDisplay
+							});
+						}
+						item.interestedUsers = interestedUsers;
+						items.push(item);
+						if (i == (result.length - 1)) {
+							res.send(items.reverse());
+						}
+					});
+				}
+				if (!flag)
+					res.send(result);
 			})
 		} 
 		else {
 			query = "select * from product where owner != '" + owneruser + "' and status = 'Available' and category_name = '" + data.category + "';";
 			con.query(query, (err, result) => {
 				if (err) throw err;
-				res.send(result.reverse());
+				let items = [];
+				let flag = false;
+				for (let i = 0; i < result.length; i++) {
+					flag = true;
+					query = "select * from interest where _id = " + result[i]._id + ";";
+					let item = result[i];
+					item.category = item.category_name;
+					let interestedUsers = [];
+					app.connection.query(query, (err, result2) => {
+						if (err) throw err;
+						for (let j = 0; j < result2.length; j++) {
+							interestedUsers.push({
+								username: result2[j].username,
+								status: result2[j].contactDisplay
+							});
+						}
+						item.interestedUsers = interestedUsers;
+						items.push(item);
+						if (i == (result.length - 1)) {
+							res.send(items.reverse());
+						}
+					});
+				}
+				if (!flag)
+					res.send(result);
 			});
 		}
 	}
@@ -36,15 +84,63 @@ router.post('/', (req, res) => {
 			query = "select * from product where owner != '" + owneruser + "' and status = 'Available' and ( " + str + ");";
 			con.query(query, (err, result) => {
 				if (err) throw err;
-				res.send(result);
+				let items = [];
+				let flag = false;
+				for (let i = 0; i < result.length; i++) {
+					flag = true;
+					query = "select * from interest where _id = " + result[i]._id + ";";
+					let item = result[i];
+					item.category = item.category_name;
+					let interestedUsers = [];
+					app.connection.query(query, (err, result2) => {
+						if (err) throw err;
+						for (let j = 0; j < result2.length; j++) {
+							interestedUsers.push({
+								username: result2[j].username,
+								status: result2[j].contactDisplay
+							});
+						}
+						item.interestedUsers = interestedUsers;
+						items.push(item);
+						if (i == (result.length - 1)) {
+							res.send(items);
+						}
+					});
+				}
+				if (!flag)
+					res.send(result);
 			})
 		}
 		else {
 			query = "select * from product where owner != '" + owneruser + "' and category_name = '" + data.category + "' and status = 'Available' and ( " + str + ");";
 			con.query(query, (err, result) => {
 				if (err) throw err;
-				res.send(result);
-			})
+				let items = [];
+				let flag = false;
+				for (let i = 0; i < result.length; i++) {
+					flag = true;
+					query = "select * from interest where _id = " + result[i]._id + ";";
+					let item = result[i];
+					item.category = item.category_name;
+					let interestedUsers = [];
+					app.connection.query(query, (err, result2) => {
+						if (err) throw err;
+						for (let j = 0; j < result2.length; j++) {
+							interestedUsers.push({
+								username: result2[j].username,
+								status: result2[j].contactDisplay
+							});
+						}
+						item.interestedUsers = interestedUsers;
+						items.push(item);
+						if (i == (result.length - 1)) {
+							res.send(items);
+						}
+					});
+				}
+				if (!flag)
+					res.send(result);
+			});
 		}
 	}
 });

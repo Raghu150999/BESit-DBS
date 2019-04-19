@@ -10,24 +10,27 @@ router.post('/verifyuser', (req, res) => {
     let sql = "select * from user where username = ?";
     app.connection.query(sql, req.body.username, function (err, result) {
         if (err) {
-            console.log('error in 1st sql query', err);
-            res.send('err during checking req.body existence');
+            throw err;
         }
         else {
-            console.log(result);
             if (result)
                 req.check('username', 'User already exists').not().equals(result.username);
             req.check('fname', 'First Name missing').notEmpty();
+            req.check('password', 'Passwords don\'t match').equals(req.body.rpassword);
             req.check('password', 'Password cannot be empty').notEmpty();
             req.check('phoneno', 'Phoneno is invalid').isMobilePhone(["en-IN"]);
             const errors = req.validationErrors();
             let response;
+            let data = {};
+            data.username = req.body.username;
+            data.fname = req.body.fname;
+            data.phoneno = req.body.phoneno;
+            data.password = req.body.password;
             if (errors) {
                 response = {
                     success: false,
                     errors,
                 }
-                console.log(errors);
                 res.send(response);
             }
             else {
@@ -36,13 +39,12 @@ router.post('/verifyuser', (req, res) => {
                     errors: null
                 }
                 sql = 'insert into user set ?';   //validation phoneno 10 numbers expected so use bigint(20) in database
-                connection.query(sql, req.body, function (err, result) {
+                app.connection.query(sql, data, function (err, result) {
                     if (err) {
                         console.log(err, 'database accessing error');
                         res.send(err);
                     }
                     else {
-                        console.log(result);
                         res.send(response);
                     }
                 });
@@ -93,7 +95,7 @@ router.post('/login', (req, res) => {
             let err = false;
             let success = true;
             let cleanUser;
-            if (result) {
+            if (result.length) {
                 if (result[0].password !== req.body.password) {
                     err = true;
                     success = false;
@@ -154,12 +156,13 @@ router.get('/authorize', (req, res) => {
 
 
 router.get('/getInterestedUsers', (req, res) => {
-    let sql = "select username,status from interest where _id=" + req.query._id;
+    let sql = "select username, contactDisplay from interest where _id=" + req.query.id;
     app.connection.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
         else {
+            console.log(result);
             let response = [];
             if (result) {
                 response = result
@@ -279,11 +282,31 @@ router.get('/getInterestedItems', (req, res) => {
             throw err;
         }
         else {
+            let items = [];
+            let flag = false;
             for (let i = 0; i < result.length; i++) {
-                result[i].category = result[i].category_name;
-                result[i].status = result[i].contactDisplay;
+                flag = true;
+                query = "select * from interest where _id = " + result[i]._id + ";";
+                let item = result[i];
+                item.category = item.category_name;
+                let interestedUsers = [];
+                app.connection.query(query, (err, result2) => {
+                    if (err) throw err;
+                    for (let j = 0; j < result2.length; j++) {
+                        interestedUsers.push({
+                            username: result2[j].username,
+                            status: result2[j].contactDisplay
+                        });
+                    }
+                    item.interestedUsers = interestedUsers;
+                    items.push(item);
+                    if (i == (result.length - 1)) {
+                        res.send(items.reverse());
+                    }
+                });
             }
-            res.send(result);
+            if (!flag)
+                res.send(result);
         }
     });
 });
@@ -301,7 +324,7 @@ router.post('/updateitemstatus', (req, res) => {
 });
 
 router.post('/removereq', (req, res) => {
-    let sql = "delete from requirement where username='" + req.body.username + "' and title='" + req.body.title + "' and desc='" + req.body.desc + "'";
+    let sql = "delete from requirement where username='" + req.body.username + "' and title='" + req.body.title + "' and desc='" + req.body.description + "'";
     app.connection.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -314,7 +337,12 @@ router.post('/removereq', (req, res) => {
 
 router.post('/newreq', (req, res) => {
     let sql = "insert into requirement set ?";
-    app.connection.query(sql, req.body, (err, result) => {
+    let data = {};
+    data.title = req.body.title;
+    data.username = req.body.username;
+    data.description = req.body.desc;
+    data.timestamp = req.body.timestamp;
+    app.connection.query(sql, data, (err, result) => {
         if (err) {
             throw err;
         }

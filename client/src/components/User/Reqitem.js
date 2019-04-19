@@ -48,7 +48,7 @@ class Reqitem extends Component {
               <div className="card-body req-card-body">
                 <div className="card-title req-card-title"><strong>{this.props.requirement.title}</strong></div>
                 <div className="card-text req-card-text username">{this.props.requirement.username}</div>
-                <div className="card-text req-card-text desc">{this.props.requirement.desc}</div>
+                <div className="card-text req-card-text desc">{this.props.requirement.description}</div>
                 <div className="card-text req-card-text time"><small className="text-muted">{this.calcTime(this.props.requirement.timestamp)}</small></div>
                 <button type="button" className="btn btn-dark req-delbtn" onClick={this.handleDelete}>Delete</button>
               </div>

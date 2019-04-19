@@ -48,18 +48,18 @@ const port = process.env.NODE_ENV ? process.env.PORT : 8000;
 app.post('/uploaditem', (req, res) => {
   let query;
   query = "select max(_id) as lst from product";
-  con.query(query, (err, result) => {
+  connection.query(query, (err, result) => {
     if (err) throw err;
     let _id = result[0].lst + 1;
     let name = req.body.name;
     let price = req.body.price;
     let status = req.body.status;
     let description = req.body.desc;
-    let timestamp = req.body.timestamp;
+    let timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
     let owner = req.body.owner;
     let category_name = req.body.category;
     query = "insert into product values (" + _id + ", '" + name + "', " + price + ", '" + status + "', '" + description + "', '" + timestamp + "', '" + owner + "', '" + category_name + "');";
-    con.query(query, (err, result) => {
+    connection.query(query, (err, result) => {
       if (err) throw err;
       res.send('ok');
     });

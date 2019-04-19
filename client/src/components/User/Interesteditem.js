@@ -15,7 +15,6 @@ class Interesteditem extends Component {
 
 	handleInterested = (e) => {
 		const newStatus = this.state.status === 'Not Interested' ? 'Interested' : 'Not Interested';
-		console.log(newStatus);
 		const interestedUsers = this.state.interestedUsers.filter(user => {
 			if (user.username === this.props.user.username) {
 				return false; // skip the current user
@@ -109,39 +108,17 @@ class Interesteditem extends Component {
 			<li data-target={"#images" + item._id} data-slide-to="0" className="active" key="0"></li>
 		));
 
-		for (let i = 1; i < item.fileNames.length; i++) {
-			varOl.push((
-				<li data-target={"#images" + item._id} data-slide-to={i + ""} key={i + ""}></li>
-			));
-		}
-
 		// generating carousel elements
 		let carouselElements = [];
-		if (item.fileNames.length > 0) {
-			carouselElements.push((
-				<div className="carousel-item active" key="0">
-					<img src={api_uri + "/image/" + item.fileNames[0]} className="card-img-top" alt="Card image cap" />
-				</div>
-			));
-		} else {
-			// Default image if no image is available.
-			carouselElements.push((
-				<div className="carousel-item active" key="0">
-					<img src="https://imagesvc.timeincapp.com/v3/mm/image?url=https%3A%2F%2Ftimedotcom.files.wordpress.com%2F2015%2F06%2F521811839-copy.jpg&w=800&c=sc&poi=face&q=85" className="card-img-top" alt="Responsive" />
-				</div>
-			));
-		}
+		// Default image if no image is available.
+		carouselElements.push((
+			<div className="carousel-item active" key="0">
+				<img src="https://imagesvc.timeincapp.com/v3/mm/image?url=https%3A%2F%2Ftimedotcom.files.wordpress.com%2F2015%2F06%2F521811839-copy.jpg&w=800&c=sc&poi=face&q=85" className="card-img-top" alt="Responsive" />
+			</div>
+		));
 
-		for (let i = 1; i < item.fileNames.length; i++) {
-			carouselElements.push((
-				<div className="carousel-item" key={i + ""}>
-					<img src={api_uri + "/image/" + item.fileNames[i]} className="card-img-top" alt="Card image cap" />
-				</div>
-			));
-		}
-
-		if (item.desc === '') {
-			item.desc = 'No description provided';
+		if (item.description === '') {
+			item.description = 'No description provided';
 		}
 
 		return (
@@ -174,7 +151,7 @@ class Interesteditem extends Component {
 									<dd className="col-sm-8">{item.owner}</dd>
 
 									<dt className="col-sm-4">Desc:</dt>
-									<dd className="col-sm-8">{item.desc}</dd>
+									<dd className="col-sm-8">{item.description}</dd>
 
 									<dt className="col-sm-4">Status:</dt>
 									<dd className="col-sm-8">{item.status}</dd>

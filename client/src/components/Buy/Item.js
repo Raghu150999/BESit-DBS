@@ -35,22 +35,8 @@ class Item extends Component {
 			status: newStatus,
 			interestedUsers
 		});
-
-		let data = {
-			sourceUsername: this.props.user.username,
-			targetUsername: this.props.item.owner,
-			productID: this.props.item._id,
-			productName: this.props.item.name,
-			type: 'INTEREST',
-			seenStatus: false,
-			status: newStatus,
-			timeStamp: new Date()
-		};
-
-		axios.post('/notify/interest', data)
-			.then(res => {
-			});
 	}
+
 	calcTime(timestamp) {
 		var x = new Date(timestamp);
 		var y = new Date();
@@ -120,40 +106,19 @@ class Item extends Component {
 			<li data-target={"#images" + item._id} data-slide-to="0" className="active" key="0"></li>
 		));
 
-		for (let i = 1; i < item.fileNames.length; i++) {
-			varOl.push((
-				<li data-target={"#images" + item._id} data-slide-to={i + ""} key={i + ""}></li>
-			));
-		}
 
 		// generating carousel elements (array of JSX elements when rendered will come one after another)
 		let carouselElements = [];
-		if (item.fileNames.length > 0) {
-			carouselElements.push((
-				<div className="carousel-item active" key="0">
-					<img src={api_uri + "/image/" + item.fileNames[0]} className="card-img-top" alt="Card image cap" />
-				</div>
-			));
-		} else {
-			// Default image if no image is available.
-			carouselElements.push((
-				<div className="carousel-item active" key="0">
-					<img src="https://imagesvc.timeincapp.com/v3/mm/image?url=https%3A%2F%2Ftimedotcom.files.wordpress.com%2F2015%2F06%2F521811839-copy.jpg&w=800&c=sc&poi=face&q=85" className="card-img-top" alt="Responsive" />
-				</div>
-			));
-		}
-
-		for (let i = 1; i < item.fileNames.length; i++) {
-			carouselElements.push((
-				<div className="carousel-item" key={i + ""}>
-					<img src={api_uri + "/image/" + item.fileNames[i]} className="card-img-top" alt="Card image cap" />
-				</div>
-			));
-		}
+		// Default image if no image is available.
+		carouselElements.push((
+			<div className="carousel-item active" key="0">
+				<img src="https://imagesvc.timeincapp.com/v3/mm/image?url=https%3A%2F%2Ftimedotcom.files.wordpress.com%2F2015%2F06%2F521811839-copy.jpg&w=800&c=sc&poi=face&q=85" className="card-img-top" alt="Responsive" />
+			</div>
+		));
 
 		// Default text if no description provided
-		if (item.desc === '') {
-			item.desc = 'No description provided';
+		if (item.description === '') {
+			item.description = 'No description provided';
 		}
 
 		return (
@@ -161,11 +126,6 @@ class Item extends Component {
 				<div className="col-sm-auto">
 					<div className="card box-shadow--8dp">
 						<div id={"images" + item._id} className="carousel slide" data-ride="carousel">
-							{/* Indicators */}
-							{/* <ol className="carousel-indicators">
-							{varOl}
-						</ol> */}
-							{/* Slideshow */}
 							<div className="carousel-inner">
 								{carouselElements}
 							</div>
@@ -192,7 +152,7 @@ class Item extends Component {
 										<dd className="col-sm-8">{item.owner}</dd>
 
 										<dt className="col-sm-4">Desc:</dt>
-										<dd className="col-sm-8">{item.desc}</dd>
+										<dd className="col-sm-8">{item.description}</dd>
 
 										<dt className="col-sm-4">Status:</dt>
 										<dd className="col-sm-8">{item.status}</dd>

@@ -53,7 +53,6 @@ class Profile extends Component {
       .then(res => res.data)
       .then(json => {
         if (json.success) {
-          console.log("successful");
           this.setState({
             error: []
           });
@@ -71,7 +70,7 @@ class Profile extends Component {
         }
       })
       .catch((err) => {
-        console.log(err);
+        throw err;
       });
   }
   passChange =(e)=>{
