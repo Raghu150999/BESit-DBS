@@ -72,7 +72,7 @@ app.post('/removeitem', (req, res) => {
   const item = req.body;
   let query;
   query = "delete from product where _id = " + item._id + ";";
-  con.query(query, (err, result) => {
+  connection.query(query, (err, result) => {
     if (err) throw err;
     res.send('ok');
   });

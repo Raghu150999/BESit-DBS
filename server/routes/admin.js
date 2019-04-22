@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const Category = require('./../models/categoySchema');
 const app = require('./../../app');
 
 router.post('/addcategory', (req, res) => {

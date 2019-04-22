@@ -324,7 +324,7 @@ router.post('/updateitemstatus', (req, res) => {
 });
 
 router.post('/removereq', (req, res) => {
-    let sql = "delete from requirement where username='" + req.body.username + "' and title='" + req.body.title + "' and desc='" + req.body.description + "'";
+    let sql = "delete from requirement where username='" + req.body.username + "' and title='" + req.body.title + "' and description='" + req.body.description + "'";
     app.connection.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -378,20 +378,31 @@ router.get('/getownreq', (req, res) => {
 
 router.post('/updateinteresteduser', (req, res) => {
     let query = "delete from interest where _id = " + req.body.item._id + ";";
-    let interestedUsers = req.body.interestedUsers;
-
-    for (let i = 0; i < interestedUsers.length; i++) {
-        query = "insert into interest values ('" + interestedUsers[i].username + "', " + req.body.item._id + ", " + interestedUsers[i].status + ");";
-        app.connection.query(query, (err, result) => {
-            if (err) throw err;
-        });
-    }
-    res.send('ok');
+    app.connection.query(query, (err, result) => {
+        let interestedUsers = req.body.interestedUsers;
+        let flag = false;
+        for (let i = 0; i < interestedUsers.length; i++) {
+            flag = true;
+            query = "insert into interest values ('" + interestedUsers[i].username + "', " + req.body.item._id + ", " + interestedUsers[i].status + ");";
+            app.connection.query(query, (err, result) => {
+                if (err) throw err;
+            });
+            if(i === interestedUsers.length - 1)
+                res.send('ok');
+        }
+        if(!flag)
+            res.send('ok');
+    });
 });
 
 router.post('/updateitem', (req, res) => {
-    let query = "update product set ? where _id = " + req.body._id + ";";
-    app.connection.query(query, req.body, (err, result) => {
+    console.log(req.body);
+    let data = req.body.form;
+    data.category_name = req.body.form.category;
+    data.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    delete data.category;
+    let query = "update product set ? where _id = " + req.body.id + ";";
+    app.connection.query(query, data, (err, result) => {
         if (err) throw err;
         res.send('ok');
     });
