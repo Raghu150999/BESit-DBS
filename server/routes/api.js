@@ -128,14 +128,14 @@ router.get('/authorize', (req, res) => {
     let token = req.query.token;
     jwt.verify(token, process.env.JWT_SECRET, function (err, user) {
         if (err) throw err;
-        let sql = "select * from user where username='" + user.username + "'";
+        let sql ="CALL `besit`.`getUser`('" + user.username + "');";
         app.connection.query(sql, (error, result) => {
             if (error) {
                 throw err;
             }
             else {
                 let response;
-                if (result) {
+                if (result.length) {
                     user = utils.getCleanUser(user);
                     response = {
                         user,
@@ -156,15 +156,14 @@ router.get('/authorize', (req, res) => {
 
 
 router.get('/getInterestedUsers', (req, res) => {
-    let sql = "select username, contactDisplay from interest where _id=" + req.query.id;
+    let sql = "CALL `besit`.`getInterestedUsers`(" + req.query.id + ")";
     app.connection.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
         else {
-            console.log(result);
             let response = [];
-            if (result) {
+            if (result.length) {
                 response = result
             }
             else {
@@ -183,7 +182,7 @@ router.get('/getContact', (req, res) => {
         }
         else {
             let response;
-            if (result) {
+            if (result.length) {
                 response = {
                     name: result[0].fname,
                     phoneno: result[0].phoneno
