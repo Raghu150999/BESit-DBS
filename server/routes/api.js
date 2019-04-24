@@ -137,6 +137,7 @@ router.get('/authorize', (req, res) => {
                 let response;
                 if (result.length) {
                     user = utils.getCleanUser(user);
+                    console.log(user);
                     response = {
                         user,
                         success: true
@@ -182,6 +183,7 @@ router.get('/getContact', (req, res) => {
         }
         else {
             let response;
+            console.log(req.query.username, result);
             if (result.length) {
                 response = {
                     name: result[0].fname,
