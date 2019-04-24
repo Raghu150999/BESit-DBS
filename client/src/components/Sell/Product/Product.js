@@ -83,11 +83,13 @@ class Product extends Component {
     }
 
     const getInterestedUsers = (e) => {
+      console.log(this.props.item._id);
       axios.get('/api/getInterestedUsers', {
         params: {
           id: item._id
         }
       }).then(res => {
+        console.log(res.data);
         this.setState({
           Displayusers: res.data,
           open: true
@@ -147,8 +149,8 @@ class Product extends Component {
 
                 <div className="card-text int-card-text time"><small className="text-muted">{this.calcTime(this.props.item.timestamp)}</small></div>
 
-                <button type="button" className="btn btn-dark sell-prod-btn" onClick={getInterestedUsers} data-toggle="modal" data-target="#exampleModal">Interested Buyers</button>
-                <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <button type="button" className="btn btn-dark sell-prod-btn" onClick={getInterestedUsers} data-toggle="modal" data-target={"#exampleModal" + this.props.item._id}>Interested Buyers</button>
+                <div className="modal fade" id={"exampleModal" + this.props.item._id} tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div className="modal-dialog interestDialog" role="document">
                     <div className="modal-content">
                       <div className="modal-header">

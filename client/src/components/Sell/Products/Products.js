@@ -12,6 +12,7 @@ class Products extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props.user);
     if (this.props.user) {
       axios.get('/api/getitems', {
         params: {

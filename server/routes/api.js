@@ -41,7 +41,6 @@ router.post('/verifyuser', (req, res) => {
                 sql = 'insert into user set ?';   //validation phoneno 10 numbers expected so use bigint(20) in database
                 app.connection.query(sql, data, function (err, result) {
                     if (err) {
-                        console.log(err, 'database accessing error');
                         res.send(err);
                     }
                     else {
@@ -135,9 +134,8 @@ router.get('/authorize', (req, res) => {
             }
             else {
                 let response;
-                if (result.length) {
+                if (result[0].length) {
                     user = utils.getCleanUser(user);
-                    console.log(user);
                     response = {
                         user,
                         success: true
@@ -170,7 +168,7 @@ router.get('/getInterestedUsers', (req, res) => {
             else {
                 reponse = null;
             }
-            res.send(response);
+            res.send(response[0]);
         }
     });
 });
@@ -183,7 +181,6 @@ router.get('/getContact', (req, res) => {
         }
         else {
             let response;
-            console.log(req.query.username, result);
             if (result.length) {
                 response = {
                     name: result[0].fname,
@@ -397,7 +394,6 @@ router.post('/updateinteresteduser', (req, res) => {
 });
 
 router.post('/updateitem', (req, res) => {
-    console.log(req.body);
     let data = req.body.form;
     data.category_name = req.body.form.category;
     data.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
